@@ -135,3 +135,52 @@ func bleuBrevityPenalty(length, refLength int) float64 {
 	}
 	return math.Exp(1 - float64(refLength)/float64(length))
 }
+
+// ROUGEN computes a ROUGE-N score,
+// which is a recall-oriented text summarization metrics.
+//
+// Chin-Yew Lin. 2004.
+// "ROUGE: A Package for Automatic Evaluation of Summaries."
+// In Proceedings of ACL. https://aclanthology.org/W04-1013.pdf
+func ROUGEN[T comparable](candidate []T, references [][]T, n int) float64 {
+	c := NGrams(candidate, n)
+
+	helper := func(a, b []T) bool {
+		if len(a) != len(b) {
+			return false
+		}
+		for i := 0; i < len(a); i++ {
+			if a[i] != b[i] {
+				return false
+			}
+		}
+		return true
+	}
+
+	var numerator, denominator int
+	for _, reference := range references {
+		r := NGrams(reference, n)
+		if len(r) == 0 {
+			continue
+		}
+		match := make([]bool, len(c))
+		for j := 0; j < len(r); j++ {
+			for i := 0; i < len(c); i++ {
+				if match[i] {
+					continue
+				}
+				if !helper(c[i], r[j]) {
+					continue
+				}
+				match[i] = true
+				numerator++
+			}
+		}
+		denominator += len(r)
+	}
+
+	if denominator == 0 {
+		return 0
+	}
+	return float64(numerator) / float64(denominator)
+}
