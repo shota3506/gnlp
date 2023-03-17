@@ -67,3 +67,27 @@ func TestCorpusBLEU(t *testing.T) {
 		})
 	}
 }
+
+func TestROUGEN(t *testing.T) {
+	candidate := strings.Split("How we can travel faster than light ?", " ")
+	references := [][]string{
+		strings.Split("Is faster than light travel possible ?", " "),
+		strings.Split("Is there any way to travel faster than light ?", " "),
+	}
+
+	for i, tc := range []struct {
+		n        int
+		expected float64
+	}{
+		{1, 0.5882352941},
+		{2, 0.4},
+		{3, 0.3076923077},
+	} {
+		t.Run(fmt.Sprintf("test case %d", i), func(t *testing.T) {
+			rouge := gnlp.ROUGEN(candidate, references, tc.n)
+			if math.Abs(tc.expected-rouge) > 1e-9 {
+				t.Errorf("epected: %f, actual: %f", tc.expected, rouge)
+			}
+		})
+	}
+}
