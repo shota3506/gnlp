@@ -91,3 +91,22 @@ func TestROUGEN(t *testing.T) {
 		})
 	}
 }
+
+func TestROUGEL(t *testing.T) {
+	candidate := strings.Split("How we can travel faster than light ?", " ")
+	references := [][]string{
+		strings.Split("Is faster than light travel possible ?", " "),
+		strings.Split("Is there any way to travel faster than light ?", " "),
+	}
+
+	var expectedReall float64 = 0.5294117647
+	var expectedPrecision float64 = 0.5625
+
+	recall, precision := gnlp.ROUGEL(candidate, references)
+	if math.Abs(expectedReall-recall) > 1e-9 {
+		t.Errorf("epected: %f, actual: %f", expectedReall, recall)
+	}
+	if math.Abs(expectedPrecision-precision) > 1e-9 {
+		t.Errorf("epected: %f, actual: %f", expectedPrecision, precision)
+	}
+}

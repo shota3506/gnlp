@@ -184,3 +184,31 @@ func ROUGEN[T comparable](candidate []T, references [][]T, n int) float64 {
 	}
 	return float64(numerator) / float64(denominator)
 }
+
+// ROUGEL computes a ROUGE-L score.
+// which is a text summarization metrics based on the longest common subsequence.
+//
+// Chin-Yew Lin. 2004.
+// "ROUGE: A Package for Automatic Evaluation of Summaries."
+// In Proceedings of ACL. https://aclanthology.org/W04-1013.pdf
+func ROUGEL[T comparable](candidate []T, references [][]T) (recall, precision float64) {
+	if len(candidate) == 0 || len(references) == 0 {
+		return
+	}
+
+	lcsLength := 0
+	refLength := 0
+	for _, reference := range references {
+		lcss := LongestCommonSubsequences(candidate, reference)
+		lcsLength += len(lcss[0]) // lcss contains at least one sequence
+		refLength += len(reference)
+	}
+
+	if lcsLength == 0 {
+		return
+	}
+	recall = float64(lcsLength) / float64(refLength)
+	precision = float64(lcsLength) / (float64(len(candidate) * len(references)))
+	return
+
+}
