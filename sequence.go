@@ -1,9 +1,5 @@
 package gnlp
 
-import (
-	"golang.org/x/exp/slices"
-)
-
 // LongestCommonSubsequences returns longest subsequences commmon
 // to given two sequences.
 // It returns all valid subsequeces.
@@ -61,35 +57,38 @@ func LongestCommonSubsequences[T comparable](a, b []T) [][]T {
 }
 
 func uniqueSequences[T comparable](ss [][]T) [][]T {
-	type node map[T]node
+	type state struct {
+		trans map[T]*state
+		end   bool
+	}
 
-	root := make(map[T]node)
+	root := &state{trans: make(map[T]*state)}
 	for _, s := range ss {
-		n := root
+		curr := root
 		for _, t := range s {
-			if _, ok := n[t]; !ok {
-				n[t] = make(map[T]node)
+			if next, ok := curr.trans[t]; ok {
+				curr = next
+			} else {
+				next = &state{trans: make(map[T]*state)}
+				curr.trans[t] = next
+				curr = next
 			}
-			n = n[t]
 		}
+		curr.end = true
 	}
 
 	var uniq [][]T
-	var traverse func(n node, s []T)
-	traverse = func(n node, s []T) {
-		if len(n) == 0 {
-			if len(s) > 0 {
-				uniq = append(uniq, s)
-			}
-			return
+	var traverse func(s []T, curr *state)
+	traverse = func(s []T, curr *state) {
+		if curr.end {
+			uniq = append(uniq, append([]T(nil), s...))
 		}
-
-		for t, next := range n {
-			traverse(next, append(slices.Clone(s), t))
+		for t, next := range curr.trans {
+			traverse(append(s, t), next)
 		}
 	}
 
-	traverse(root, []T{})
+	traverse([]T{}, root)
 
 	return uniq
 }

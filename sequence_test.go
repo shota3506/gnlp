@@ -2,9 +2,8 @@ package gnlp_test
 
 import (
 	"fmt"
-	"testing"
-
 	"github.com/shota3506/gnlp"
+	"testing"
 )
 
 func TestLongestCommonSubsequence(t *testing.T) {
