@@ -42,7 +42,7 @@ func LevenshteinDistance[T comparable](a, b []T) int64 {
 			d2 := d[i-1] + 1
 			d3 := last + cost
 
-			d[i] = min(min(d1, d2), d3)
+			d[i] = min(d1, d2, d3)
 
 			last = prev
 		}
@@ -73,7 +73,7 @@ func DamerauLevenshteinDistance[T comparable](a, b []T) int64 {
 			d2 := d[i-1][j] + 1
 			d3 := d[i-1][j-1] + cost
 
-			d[i][j] = min(min(d1, d2), d3)
+			d[i][j] = min(d1, d2, d3)
 
 			if i >= 2 && j >= 2 && a[i-1] == b[j-2] && a[i-2] == b[j-1] {
 				d[i][j] = min(d[i][j], d[i-2][j-2]+cost)
